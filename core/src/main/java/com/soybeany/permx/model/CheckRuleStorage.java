@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class CheckRuleStorage {
+public abstract class CheckRuleStorage {
 
     private static final AntPathMatcher MATCHER = new AntPathMatcher();
     private static final List<CheckRule> ALL_RULES = new ArrayList<>();

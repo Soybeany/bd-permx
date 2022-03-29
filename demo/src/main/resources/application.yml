@@ -1,0 +1,9 @@
+permx:
+  permDefine:
+    '[*]': 全部模块-全部功能@危险的权限，慎重赋予
+  perm:
+    '[/common/**]': api:common
+  anon:
+    - /demo/**
+    - /test/**
+    - /health

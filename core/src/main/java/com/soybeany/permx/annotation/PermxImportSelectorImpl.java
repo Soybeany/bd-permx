@@ -1,12 +1,10 @@
 package com.soybeany.permx.annotation;
 
-import com.soybeany.permx.config.PermxConfig;
-import com.soybeany.permx.core.CheckRuleHandler;
-import com.soybeany.permx.core.PermDefineConsumerImpl;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
  * @author Soybeany
@@ -16,10 +14,16 @@ class PermxImportSelectorImpl implements ImportSelector {
     @Nonnull
     @Override
     public String[] selectImports(@Nonnull AnnotationMetadata importingClassMetadata) {
+        Map<String, Object> map = importingClassMetadata.getAnnotationAttributes(EnablePermx.class.getName());
+        if (null == map) {
+            throw new RuntimeException("没有配置EnablePermx");
+        }
         return new String[]{
-                PermxConfig.class.getName(),
-                CheckRuleHandler.class.getName(),
-                PermDefineConsumerImpl.class.getName(),
+                ((Class<?>) map.get("sessionProcessor")).getName(),
+                ((Class<?>) map.get("permDefineProvider")).getName(),
+                ((Class<?>) map.get("sessionStorage")).getName(),
+                ((Class<?>) map.get("sessionIdProcessor")).getName(),
+                ((Class<?>) map.get("authListener")).getName(),
         };
     }
 }

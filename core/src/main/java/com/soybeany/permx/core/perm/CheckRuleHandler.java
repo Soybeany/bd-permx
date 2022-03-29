@@ -1,4 +1,4 @@
-package com.soybeany.permx.core;
+package com.soybeany.permx.core.perm;
 
 import com.soybeany.permx.annotation.RequireAnonymity;
 import com.soybeany.permx.annotation.RequireLogin;
@@ -19,9 +19,9 @@ import javax.servlet.ServletContextListener;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class CheckRuleHandler implements ServletContextListener {
 
     @Autowired
@@ -63,8 +63,10 @@ public class CheckRuleHandler implements ServletContextListener {
         // 先添加代码中指定的配置
         mapping.getHandlerMethods().forEach((info, method) -> onHandleMethod(info, method, permDefines));
         // 再添加yml中指定的配置
-        CheckRuleStorage.addRules(WithPermission.fromEntityMap(permDefines, permxConfig.getPerm()));
-        CheckRuleStorage.addRules(WithAnonymity.fromPatternList(permxConfig.getAnon()));
+        Optional.ofNullable(permxConfig.getPerm())
+                .ifPresent(perm -> CheckRuleStorage.addRules(WithPermission.fromEntityMap(permDefines, perm)));
+        Optional.ofNullable(permxConfig.getAnon())
+                .ifPresent(anon -> CheckRuleStorage.addRules(WithAnonymity.fromPatternList(anon)));
         // 更新全局配置
         CheckRuleStorage.updateAllRules();
     }

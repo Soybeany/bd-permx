@@ -1,4 +1,4 @@
-package com.soybeany.permx.core;
+package com.soybeany.permx.core.perm;
 
 import com.soybeany.permx.annotation.PermDefine;
 import com.soybeany.permx.exception.BdPermxRtException;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author Soybeany
  * @date 2021/5/26
  */
-public abstract class PermDefineProviderStdImpl implements PermDefineProvider {
+public abstract class BasePermDefineProviderStdImpl implements PermDefineProvider {
     @Override
     public Set<PermissionDefine> onGetPermDefines() {
         Set<PermissionDefine> result = new HashSet<>();
