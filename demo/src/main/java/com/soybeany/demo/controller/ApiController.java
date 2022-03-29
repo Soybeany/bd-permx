@@ -30,6 +30,7 @@ public class ApiController {
     @Autowired
     private IAuthVerifier<Input> authVerifier;
 
+    @RequireAnonymity
     @PostMapping("/login")
     public String login(HttpServletRequest request, HttpServletResponse response, Input input) {
         try {

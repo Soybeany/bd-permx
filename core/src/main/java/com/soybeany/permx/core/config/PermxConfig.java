@@ -1,4 +1,4 @@
-package com.soybeany.permx.config;
+package com.soybeany.permx.core.config;
 
 import lombok.Getter;
 import lombok.Setter;

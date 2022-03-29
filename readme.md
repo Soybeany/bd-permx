@@ -2,7 +2,7 @@
 
 ## 简介
 
-这是一款用于前后端分离、SpringBoot项目的权限认证、鉴权框架
+这是一款用于前后端分离、SpringBoot项目的权限认证、鉴权框架 相比于shiro的realm会在BeanPostProcessor阶段就被创建，此框架更适合于bean实例阶段的AutoWired; login时自定义认证逻辑
 
 ## 配置
 

@@ -1,6 +1,6 @@
 package com.soybeany.permx.core.perm;
 
-import com.soybeany.permx.config.PermxConfig;
+import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.model.PermissionDefine;
 import org.springframework.beans.factory.annotation.Autowired;
 
