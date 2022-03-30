@@ -6,11 +6,11 @@ import com.soybeany.permx.exception.BdPermxNoSessionException;
  * @author Soybeany
  * @date 2022/3/29
  */
-public interface ISessionStorage<Session> {
+public interface ISessionStorage<Input, Session> {
 
-    int getSessionTtl();
+    int getSessionTtl(Input input);
 
-    void saveSession(String sessionId, Session session);
+    void saveSession(String sessionId, Input input, Session session, int ttl);
 
     void removeSession(String sessionId) throws BdPermxNoSessionException;
 

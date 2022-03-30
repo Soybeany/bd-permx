@@ -15,7 +15,7 @@ public interface ISessionIdProcessor<Input> {
 
     String loadSessionId(HttpServletRequest request) throws BdPermxNoSessionException;
 
-    void saveSessionId(String sessionId, HttpServletRequest request, HttpServletResponse response);
+    void saveSessionId(String sessionId, HttpServletRequest request, HttpServletResponse response, Input input, int ttl);
 
     void removeSessionId(String sessionId, HttpServletRequest request, HttpServletResponse response);
 

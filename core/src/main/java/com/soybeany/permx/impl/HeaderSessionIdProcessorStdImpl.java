@@ -20,7 +20,7 @@ public class HeaderSessionIdProcessorStdImpl<Input> extends BaseSessionIdProcess
     }
 
     @Override
-    public void saveSessionId(String sessionId, HttpServletRequest request, HttpServletResponse response) {
+    public void saveSessionId(String sessionId, HttpServletRequest request, HttpServletResponse response, Input input, int ttl) {
         response.setHeader(sessionIdKey, sessionId);
     }
 

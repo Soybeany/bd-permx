@@ -24,7 +24,7 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
     @Autowired
     private ISessionProcessor<Input, Session> sessionProcessor;
     @Autowired
-    private ISessionStorage<Session> sessionStorage;
+    private ISessionStorage<Input, Session> sessionStorage;
 
     @Override
     public Session saveSession(HttpServletRequest request, HttpServletResponse response, Input input) {
@@ -33,9 +33,10 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
         // 入参转换为session实体
         Session session = sessionProcessor.toSession(sessionId, input);
         // 保存session实体
-        sessionStorage.saveSession(sessionId, session);
+        int ttl = sessionStorage.getSessionTtl(input);
+        sessionStorage.saveSession(sessionId, input, session, ttl);
         // 将sessionId写入response
-        sessionIdProcessor.saveSessionId(sessionId, request, response);
+        sessionIdProcessor.saveSessionId(sessionId, request, response, input, ttl);
         // 返回sessionId
         return session;
     }
