@@ -16,7 +16,7 @@ public class SessionStorageStdImpl<Input, Session> implements ISessionStorage<In
     private final IDataHolder<Session> sessionHolder = onSetupSessionHolder();
 
     @Override
-    public int getSessionTtl(Input input) {
+    public int getSessionTtl(String sessionId, Input input, Session session) {
         return 30 * 60;
     }
 

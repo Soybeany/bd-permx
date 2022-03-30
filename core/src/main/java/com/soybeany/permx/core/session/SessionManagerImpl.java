@@ -33,7 +33,7 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
         // 入参转换为session实体
         Session session = sessionProcessor.toSession(sessionId, input);
         // 保存session实体
-        int ttl = sessionStorage.getSessionTtl(input);
+        int ttl = sessionStorage.getSessionTtl(sessionId, input, session);
         sessionStorage.saveSession(sessionId, input, session, ttl);
         // 将sessionId写入response
         sessionIdProcessor.saveSessionId(sessionId, request, response, input, ttl);
