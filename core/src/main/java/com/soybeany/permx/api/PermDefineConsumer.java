@@ -1,4 +1,4 @@
-package com.soybeany.permx.core.perm;
+package com.soybeany.permx.api;
 
 import com.soybeany.permx.model.PermissionDefine;
 
@@ -10,7 +10,7 @@ import java.util.Set;
  * @date 2021/5/26
  */
 @SuppressWarnings("unused")
-interface PermDefineConsumer {
+public interface PermDefineConsumer {
 
     String CONTENT_SEPARATOR = "@";
 

@@ -3,6 +3,7 @@ package com.soybeany.permx.core.perm;
 import com.soybeany.permx.annotation.RequireAnonymity;
 import com.soybeany.permx.annotation.RequireLogin;
 import com.soybeany.permx.annotation.RequirePermissions;
+import com.soybeany.permx.api.PermDefineConsumer;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.exception.BdPermxRtException;
 import com.soybeany.permx.model.CheckRule;
