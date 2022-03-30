@@ -1,7 +1,5 @@
 package com.soybeany.permx.api;
 
-import com.soybeany.permx.model.CheckRule;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -23,9 +21,9 @@ public interface IAuthListener<Session> {
     }
 
     /**
-     * 鉴权时的回调
+     * 找到会话时的回调
      */
-    default void onCheckAuth(HttpServletRequest request, CheckRule rule, Session session, boolean permitted) {
+    default void onFoundSession(Session session) {
     }
 
 }

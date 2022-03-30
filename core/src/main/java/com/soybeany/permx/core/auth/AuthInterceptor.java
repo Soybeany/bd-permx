@@ -14,9 +14,13 @@ import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
+
+    private static final Supplier<InnerException> UNAUTHORIZED_SUPPLIER = () -> new InnerException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 
     @Autowired
     private IAuthListener<Session> listener;
@@ -27,6 +31,8 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
     public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws Exception {
         try {
             listener.onStartRequest(request);
+            Optional<Session> sessionOptional = getSession(request);
+            sessionOptional.ifPresent(session -> listener.onFoundSession(session));
             String path = request.getServletPath();
             CheckRule rule = CheckRuleStorage.getMatchedRule(path);
             // 若没有匹配到pattern，则特殊处理
@@ -36,7 +42,7 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
                     return true;
                 }
                 // 只要是已登录用户(存在会话)，即可访问
-                getSession(request);
+                sessionOptional.orElseThrow(UNAUTHORIZED_SUPPLIER);
                 return true;
             }
             // 若允许匿名访问，则放行
@@ -44,7 +50,7 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
                 return true;
             }
             // 先检查是否已登录
-            Session session = getSession(request);
+            Session session = getSession(request).orElseThrow(UNAUTHORIZED_SUPPLIER);
             // 再检查是否有权限
             Collection<PermissionParts> providedPermissions = sessionManager.getPermissionsFromSession(session);
             if (!CheckRuleStorage.canAccess((CheckRule.WithPermission) rule, providedPermissions)) {
@@ -72,11 +78,11 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
 
     // ********************内部方法********************
 
-    private Session getSession(HttpServletRequest request) throws InnerException {
+    private Optional<Session> getSession(HttpServletRequest request) {
         try {
-            return sessionManager.loadSession(request);
+            return Optional.of(sessionManager.loadSession(request));
         } catch (BdPermxNoSessionException e) {
-            throw new InnerException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return Optional.empty();
         }
     }
 

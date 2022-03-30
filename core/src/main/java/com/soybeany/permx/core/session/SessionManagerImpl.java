@@ -27,7 +27,7 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
     private ISessionStorage<Session> sessionStorage;
 
     @Override
-    public String saveSession(HttpServletRequest request, HttpServletResponse response, Input input) {
+    public Session saveSession(HttpServletRequest request, HttpServletResponse response, Input input) {
         // 获取sessionId
         String sessionId = sessionIdProcessor.getNewSessionId(input);
         // 入参转换为session实体
@@ -37,7 +37,7 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
         // 将sessionId写入response
         sessionIdProcessor.saveSessionId(sessionId, request, response);
         // 返回sessionId
-        return sessionId;
+        return session;
     }
 
     @Override

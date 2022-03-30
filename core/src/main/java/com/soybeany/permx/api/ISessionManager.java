@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 public interface ISessionManager<Input, Session> {
 
-    String saveSession(HttpServletRequest request, HttpServletResponse response, Input input);
+    Session saveSession(HttpServletRequest request, HttpServletResponse response, Input input);
 
     void removeSession(HttpServletRequest request, HttpServletResponse response) throws BdPermxNoSessionException;
 
