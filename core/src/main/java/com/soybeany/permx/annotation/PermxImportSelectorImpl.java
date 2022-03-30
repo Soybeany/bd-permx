@@ -19,7 +19,6 @@ class PermxImportSelectorImpl implements ImportSelector {
             throw new RuntimeException("没有配置EnablePermx");
         }
         return new String[]{
-                ((Class<?>) map.get("authVerifier")).getName(),
                 ((Class<?>) map.get("sessionProcessor")).getName(),
                 ((Class<?>) map.get("permDefineProvider")).getName(),
                 ((Class<?>) map.get("sessionStorage")).getName(),

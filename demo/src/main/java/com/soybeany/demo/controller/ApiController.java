@@ -5,6 +5,7 @@ import com.soybeany.demo.model.Input;
 import com.soybeany.permx.annotation.RequireAnonymity;
 import com.soybeany.permx.annotation.RequirePermissions;
 import com.soybeany.permx.api.IAuthManager;
+import com.soybeany.permx.api.IAuthVerifier;
 import com.soybeany.permx.exception.BdPermxAuthException;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,14 @@ public class ApiController {
 
     @Autowired
     private IAuthManager<Input> authManager;
+    @Autowired
+    private IAuthVerifier<Input> authVerifier;
 
     @RequireAnonymity
     @PostMapping("/login")
     public String login(HttpServletRequest request, HttpServletResponse response, Input input) {
         try {
-            authManager.login(request, response, input);
+            authManager.login(request, response, input, authVerifier);
             return "登录成功";
         } catch (BdPermxAuthException e) {
             return "登录失败:" + e.getMessage();

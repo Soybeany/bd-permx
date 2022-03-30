@@ -1,6 +1,5 @@
 package com.soybeany.demo;
 
-import com.soybeany.demo.impl.AuthVerifierImpl;
 import com.soybeany.demo.impl.PermDefineProviderImpl;
 import com.soybeany.demo.impl.SessionProcessorImpl;
 import com.soybeany.permx.annotation.EnablePermx;
@@ -8,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnablePermx(
-        authVerifier = AuthVerifierImpl.class,
         sessionProcessor = SessionProcessorImpl.class,
         permDefineProvider = PermDefineProviderImpl.class
 )

@@ -36,11 +36,6 @@ import java.lang.annotation.*;
 public @interface EnablePermx {
 
     /**
-     * 配置认证者
-     */
-    Class<? extends IAuthVerifier<?>> authVerifier();
-
-    /**
      * 配置会话处理者
      */
     Class<? extends ISessionProcessor<?, ?>> sessionProcessor();
