@@ -15,7 +15,8 @@ public interface IAuthManager<Input> {
     /**
      * 登录
      */
-    String login(HttpServletRequest request, HttpServletResponse response, Input input, IAuthVerifier<Input> verifier) throws BdPermxAuthException;
+    @SuppressWarnings("UnusedReturnValue")
+    String login(HttpServletRequest request, HttpServletResponse response, Input input) throws BdPermxAuthException;
 
     /**
      * 登出

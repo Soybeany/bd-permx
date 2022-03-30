@@ -1,6 +1,6 @@
 package com.soybeany.permx.impl;
 
-import com.soybeany.permx.core.perm.PermDefineProvider;
+import com.soybeany.permx.api.PermDefineProvider;
 import com.soybeany.permx.model.PermissionDefine;
 
 import java.util.Set;

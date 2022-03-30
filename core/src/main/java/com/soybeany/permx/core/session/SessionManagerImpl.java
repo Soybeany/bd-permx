@@ -5,10 +5,12 @@ import com.soybeany.permx.api.ISessionManager;
 import com.soybeany.permx.api.ISessionProcessor;
 import com.soybeany.permx.api.ISessionStorage;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
+import com.soybeany.permx.model.PermissionParts;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 
 /**
  * @author Soybeany
@@ -54,6 +56,11 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
         String sessionId = sessionIdProcessor.loadSessionId(request);
         // 获取session实体
         return sessionStorage.loadSession(sessionId);
+    }
+
+    @Override
+    public Collection<PermissionParts> getPermissionsFromSession(Session session) {
+        return sessionProcessor.getPermissionsFromSession(session);
     }
 
 }

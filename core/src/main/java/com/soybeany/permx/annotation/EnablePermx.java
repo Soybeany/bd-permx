@@ -1,16 +1,12 @@
 package com.soybeany.permx.annotation;
 
-import com.soybeany.permx.api.IAuthListener;
-import com.soybeany.permx.api.ISessionIdProcessor;
-import com.soybeany.permx.api.ISessionProcessor;
-import com.soybeany.permx.api.ISessionStorage;
+import com.soybeany.permx.api.*;
 import com.soybeany.permx.core.auth.AuthInterceptor;
 import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.core.perm.CheckRuleHandler;
 import com.soybeany.permx.core.perm.PermDefineConsumerImpl;
-import com.soybeany.permx.core.perm.PermDefineProvider;
 import com.soybeany.permx.core.session.SessionManagerImpl;
 import com.soybeany.permx.impl.AuthListenerStdImpl;
 import com.soybeany.permx.impl.EmptyPermDefineProvider;
@@ -38,6 +34,11 @@ import java.lang.annotation.*;
         SessionManagerImpl.class,
 })
 public @interface EnablePermx {
+
+    /**
+     * 配置认证者
+     */
+    Class<? extends IAuthVerifier<?>> authVerifier();
 
     /**
      * 配置会话处理者

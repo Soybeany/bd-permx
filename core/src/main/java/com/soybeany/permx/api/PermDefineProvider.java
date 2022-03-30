@@ -1,4 +1,4 @@
-package com.soybeany.permx.core.perm;
+package com.soybeany.permx.api;
 
 import com.soybeany.permx.model.PermissionDefine;
 

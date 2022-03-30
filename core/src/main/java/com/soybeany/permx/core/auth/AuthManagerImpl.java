@@ -14,15 +14,18 @@ import javax.servlet.http.HttpServletResponse;
  * @author Soybeany
  * @date 2022/3/28
  */
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
 
+    @Autowired
+    private IAuthVerifier<Input> authVerifier;
     @Autowired
     private ISessionManager<Input, Session> sessionManager;
 
     @Override
-    public String login(HttpServletRequest request, HttpServletResponse response, Input input, IAuthVerifier<Input> verifier) throws BdPermxAuthException {
+    public String login(HttpServletRequest request, HttpServletResponse response, Input input) throws BdPermxAuthException {
         // 认证
-        verifier.onVerify(input);
+        authVerifier.onVerify(input);
         // 保存session，并返回sessionId
         return sessionManager.saveSession(request, response, input);
     }

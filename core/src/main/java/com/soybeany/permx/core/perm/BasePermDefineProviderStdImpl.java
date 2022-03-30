@@ -1,6 +1,7 @@
 package com.soybeany.permx.core.perm;
 
 import com.soybeany.permx.annotation.PermDefine;
+import com.soybeany.permx.api.PermDefineProvider;
 import com.soybeany.permx.exception.BdPermxRtException;
 import com.soybeany.permx.model.PermissionDefine;
 

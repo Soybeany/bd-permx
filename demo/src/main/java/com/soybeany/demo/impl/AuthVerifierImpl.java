@@ -21,7 +21,6 @@ public class AuthVerifierImpl implements IAuthVerifier<Input> {
         put("456", "abc");
     }};
 
-
     @Override
     public void onVerify(Input input) throws BdPermxAuthException {
         Optional.ofNullable(users.get(input.getAccount()))

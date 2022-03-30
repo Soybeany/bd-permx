@@ -10,7 +10,7 @@ import java.util.Set;
  * @date 2021/5/26
  */
 @SuppressWarnings("unused")
-public interface PermDefineConsumer {
+interface PermDefineConsumer {
 
     String CONTENT_SEPARATOR = "@";
 

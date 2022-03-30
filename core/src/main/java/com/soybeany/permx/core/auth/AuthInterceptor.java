@@ -2,7 +2,6 @@ package com.soybeany.permx.core.auth;
 
 import com.soybeany.permx.api.IAuthListener;
 import com.soybeany.permx.api.ISessionManager;
-import com.soybeany.permx.api.ISessionProcessor;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
@@ -10,17 +9,12 @@ import com.soybeany.permx.model.PermissionParts;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 
-/**
- * 可使用{@link WebMvcConfigurer#addInterceptors}添加拦截器，如
- * <br/>registry.addInterceptor(new AuthInterceptor(callback)).addPathPatterns("/**").order(-1);
- */
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
 
@@ -28,8 +22,6 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
     private IAuthListener<Session> listener;
     @Autowired
     private ISessionManager<Input, Session> sessionManager;
-    @Autowired
-    private ISessionProcessor<Input, Session> sessionProcessor;
 
     @Override
     public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws Exception {
@@ -54,7 +46,7 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
             // 先检查是否已登录
             Session session = getSession(request);
             // 再检查是否有权限
-            Collection<PermissionParts> providedPermissions = sessionProcessor.getPermissionsFromSession(session);
+            Collection<PermissionParts> providedPermissions = sessionManager.getPermissionsFromSession(session);
             if (!CheckRuleStorage.canAccess((CheckRule.WithPermission) rule, providedPermissions)) {
                 throw new InnerException(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
             }
