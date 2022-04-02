@@ -18,6 +18,8 @@
     <modules>
         <module>core</module>
         <module>demo</module>
+        <module>shiro</module>
+        <module>auth</module>
     </modules>
 
     <properties>
