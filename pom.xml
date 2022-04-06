@@ -20,6 +20,7 @@
         <module>demo</module>
         <module>shiro</module>
         <module>auth</module>
+        <module>shiro-demo</module>
     </modules>
 
     <properties>
