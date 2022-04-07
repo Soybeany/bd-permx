@@ -11,17 +11,17 @@ import java.util.Optional;
  * @author Soybeany
  * @date 2022/3/29
  */
-public class SessionStorageStdImpl<Input, Session> implements ISessionStorage<Input, Session> {
+public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> {
 
     private final IDataHolder<Session> sessionHolder = onSetupSessionHolder();
 
     @Override
-    public int getSessionTtl(String sessionId, Input input, Session session) {
+    public int getSessionTtl(String sessionId, Session session) {
         return 30 * 60;
     }
 
     @Override
-    public void saveSession(String sessionId, Input input, Session session, int ttl) {
+    public void saveSession(String sessionId, Session session, int ttl) {
         sessionHolder.put(sessionId, session, ttl);
     }
 

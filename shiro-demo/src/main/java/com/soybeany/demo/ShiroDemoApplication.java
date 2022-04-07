@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         permDefineProvider = PermDefineProviderImpl.class,
         authListener = AuthListenerImpl.class
 )
-@SpringBootApplication(scanBasePackages = "com.soybeany")
+@SpringBootApplication
 class ShiroDemoApplication {
 
     public static void main(String[] args) {

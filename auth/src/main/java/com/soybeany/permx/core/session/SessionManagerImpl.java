@@ -5,6 +5,8 @@ import com.soybeany.permx.api.ISessionManager;
 import com.soybeany.permx.api.ISessionProcessor;
 import com.soybeany.permx.api.ISessionStorage;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
+import com.soybeany.permx.model.CheckRule;
+import com.soybeany.permx.model.CheckRuleStorage;
 import com.soybeany.permx.model.PermissionParts;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,7 +26,7 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
     @Autowired
     private ISessionProcessor<Input, Session> sessionProcessor;
     @Autowired
-    private ISessionStorage<Input, Session> sessionStorage;
+    private ISessionStorage<Session> sessionStorage;
 
     @Override
     public Session saveSession(HttpServletRequest request, HttpServletResponse response, Input input) {
@@ -33,8 +35,8 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
         // 入参转换为session实体
         Session session = sessionProcessor.toSession(sessionId, input);
         // 保存session实体
-        int ttl = sessionStorage.getSessionTtl(sessionId, input, session);
-        sessionStorage.saveSession(sessionId, input, session, ttl);
+        int ttl = sessionStorage.getSessionTtl(sessionId, session);
+        sessionStorage.saveSession(sessionId, session, ttl);
         // 将sessionId写入response
         sessionIdProcessor.saveSessionId(sessionId, request, response, input, ttl);
         // 返回sessionId
@@ -60,8 +62,9 @@ public class SessionManagerImpl<Input, Session> implements ISessionManager<Input
     }
 
     @Override
-    public Collection<PermissionParts> getPermissionsFromSession(Session session) {
-        return sessionProcessor.getPermissionsFromSession(session);
+    public boolean canAccess(CheckRule.WithPermission rule, Session session) {
+        Collection<PermissionParts> provided = sessionProcessor.getPermissionsFromSession(session);
+        return CheckRuleStorage.canAccess(rule, provided);
     }
 
 }

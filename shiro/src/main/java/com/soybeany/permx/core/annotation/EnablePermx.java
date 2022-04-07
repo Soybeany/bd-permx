@@ -1,11 +1,13 @@
 package com.soybeany.permx.core.annotation;
 
 import com.soybeany.permx.api.*;
+import com.soybeany.permx.core.adapter.*;
+import com.soybeany.permx.core.auth.AuthInterceptor;
+import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.core.perm.CheckRuleHandler;
 import com.soybeany.permx.core.perm.PermDefineConsumerImpl;
-import com.soybeany.permx.core.session.SessionManagerImpl;
 import com.soybeany.permx.impl.AuthListenerStdImpl;
 import com.soybeany.permx.impl.EmptyPermDefineProvider;
 import com.soybeany.permx.impl.HeaderSessionIdProcessorStdImpl;
@@ -24,10 +26,17 @@ import java.lang.annotation.*;
 @Import({
         PermxConfig.class,
         CheckRuleHandler.class,
+        AuthInterceptor.class,
+        AuthInterceptorConfigurer.class,
         PermDefineConsumerImpl.class,
         PermxImportSelectorImpl.class,
         AuthManagerImpl.class,
-        SessionManagerImpl.class,
+        SecurityManagerAdapter.class,
+        RealmAdapter.class,
+        SubjectFactoryAdapter.class,
+        SessionFactoryAdapter.class,
+        SessionDaoAdapter.class,
+        SessionManagerAdapter.class,
 })
 public @interface EnablePermx {
 

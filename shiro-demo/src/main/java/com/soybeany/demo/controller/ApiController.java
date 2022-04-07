@@ -2,6 +2,7 @@ package com.soybeany.demo.controller;
 
 import com.soybeany.demo.impl.PermConstants;
 import com.soybeany.demo.model.Input;
+import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.IAuthVerifier;
 import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -22,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/api")
 public class ApiController {
 
-    //    @Autowired
-//    private IAuthManager<Input> authManager;
+    @Autowired
+    private IAuthManager<Input> authManager;
     @Autowired
     private IAuthVerifier<Input> authVerifier;
 
@@ -31,7 +32,7 @@ public class ApiController {
     @PostMapping("/login")
     public String login(HttpServletRequest request, HttpServletResponse response, Input input) {
         try {
-//            authManager.login(request, response, input, authVerifier);
+            authManager.login(request, response, input, authVerifier);
             return "登录成功";
         } catch (Exception e) {
             return "登录失败:" + e.getMessage();
@@ -41,7 +42,7 @@ public class ApiController {
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         try {
-//            authManager.logout(request, response);
+            authManager.logout(request, response);
             return "登出成功";
         } catch (Exception e) {
             return "登出失败:" + e.getMessage();
