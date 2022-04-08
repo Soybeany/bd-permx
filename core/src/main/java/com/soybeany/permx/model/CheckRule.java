@@ -1,20 +1,24 @@
 package com.soybeany.permx.model;
 
 import com.soybeany.permx.exception.BdPermxRtException;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.*;
 
-@Data
+@SuppressWarnings("AlibabaAbstractClassShouldStartWithAbstractNaming")
 public abstract class CheckRule {
 
     private String pattern;
 
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
     // ********************内部类********************
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
     public static class WithPermission extends CheckRule {
         private final Set<String> requiredPermissions = new HashSet<>();
 
@@ -34,10 +38,12 @@ public abstract class CheckRule {
             });
             return result;
         }
+
+        public Set<String> getRequiredPermissions() {
+            return requiredPermissions;
+        }
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
     public static class WithAnonymity extends CheckRule {
 
         public static List<WithAnonymity> fromPatternList(List<String> list) {

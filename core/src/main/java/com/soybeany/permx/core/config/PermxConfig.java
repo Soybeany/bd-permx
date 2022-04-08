@@ -1,7 +1,5 @@
 package com.soybeany.permx.core.config;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +10,6 @@ import java.util.Map;
  * @author Soybeany
  */
 @Component
-@Setter
-@Getter
 @ConfigurationProperties(prefix = "permx")
 public class PermxConfig {
 
@@ -32,4 +28,27 @@ public class PermxConfig {
      */
     private List<String> anon;
 
+    public Map<String, String> getPermDefine() {
+        return permDefine;
+    }
+
+    public void setPermDefine(Map<String, String> permDefine) {
+        this.permDefine = permDefine;
+    }
+
+    public Map<String, String> getPerm() {
+        return perm;
+    }
+
+    public void setPerm(Map<String, String> perm) {
+        this.perm = perm;
+    }
+
+    public List<String> getAnon() {
+        return anon;
+    }
+
+    public void setAnon(List<String> anon) {
+        this.anon = anon;
+    }
 }

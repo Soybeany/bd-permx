@@ -5,10 +5,7 @@ import com.soybeany.permx.core.auth.AuthInterceptor;
 import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.core.perm.PermDefineConsumerImpl;
-import com.soybeany.permx.impl.AuthListenerStdImpl;
-import com.soybeany.permx.impl.EmptyPermDefineProvider;
-import com.soybeany.permx.impl.HeaderSessionIdProcessorStdImpl;
-import com.soybeany.permx.impl.SessionStorageStdImpl;
+import com.soybeany.permx.impl.*;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -33,6 +30,11 @@ public @interface EnablePermx {
      * 配置会话处理者
      */
     Class<? extends ISessionProcessor<?, ?>> sessionProcessor();
+
+    /**
+     * 一般接口认证/鉴权过程异常时的处理者
+     */
+    Class<? extends IAuthExceptionProcessor> authExceptionProcessor() default AuthExceptionProcessorImpl.class;
 
     /**
      * 配置代码中的权限定义提供者

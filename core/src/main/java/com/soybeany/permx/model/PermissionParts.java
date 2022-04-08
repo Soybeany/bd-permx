@@ -1,18 +1,17 @@
 package com.soybeany.permx.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
 
-@AllArgsConstructor
-@ToString
-@Getter
 public class PermissionParts {
     private static final String SEPARATOR = ":";
     private static final String WILDCARD = "*";
 
     private final String module;
     private final String function;
+
+    public PermissionParts(String module, String function) {
+        this.module = module;
+        this.function = function;
+    }
 
     public static PermissionParts parse(String permission) {
         String[] parts = permission.split(SEPARATOR);
@@ -31,6 +30,14 @@ public class PermissionParts {
             return false;
         }
         return true;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public String getFunction() {
+        return function;
     }
 
     public boolean isMatch(String permission) {

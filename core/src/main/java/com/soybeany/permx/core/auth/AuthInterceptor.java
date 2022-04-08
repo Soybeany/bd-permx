@@ -1,32 +1,35 @@
 package com.soybeany.permx.core.auth;
 
+import com.soybeany.permx.api.IAuthExceptionProcessor;
 import com.soybeany.permx.api.IAuthListener;
 import com.soybeany.permx.api.ISessionManager;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
 
-    private static final Supplier<InnerException> UNAUTHORIZED_SUPPLIER = () -> new InnerException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+    private static final Supplier<AuthenticationException> UNAUTHORIZED_SUPPLIER = AuthenticationException::new;
 
     @Autowired
     private IAuthListener<Session> listener;
     @Autowired
+    private IAuthExceptionProcessor authExceptionProcessor;
+    @Autowired
     private ISessionManager<Input, Session> sessionManager;
 
     @Override
-    public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws Exception {
+    public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws IOException {
         try {
             listener.onStartRequest(request);
             Optional<Session> sessionOptional = getSession(request);
@@ -51,17 +54,21 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
             Session session = sessionOptional.orElseThrow(UNAUTHORIZED_SUPPLIER);
             // 再检查是否有权限
             if (!sessionManager.canAccess((CheckRule.WithPermission) rule, session)) {
-                throw new InnerException(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                throw new AuthorizationException();
             }
         } catch (Exception e) {
-            response.setContentType("text/plain; charset=utf-8");
-            if (e instanceof InnerException) {
-                InnerException innerException = (InnerException) e;
-                setupResponse(response, innerException.code, innerException.msg);
-            } else {
-                setupResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                listener.onFinishRequest(request);
+            } catch (Exception ignore) {
             }
-            listener.onFinishRequest(request);
+            authExceptionProcessor.onPreHandle(request, response);
+            if (e instanceof AuthenticationException) {
+                authExceptionProcessor.onAuthenticationException(request, response);
+            } else if (e instanceof AuthorizationException) {
+                authExceptionProcessor.onAuthorizationException(request, response);
+            } else {
+                authExceptionProcessor.onOtherAuthException(request, response, e);
+            }
             return false;
         }
         return true;
@@ -83,17 +90,12 @@ public class AuthInterceptor<Input, Session> implements HandlerInterceptor {
         }
     }
 
-    private void setupResponse(HttpServletResponse response, int status, String msg) throws Exception {
-        response.setStatus(status);
-        response.getWriter().print(msg);
-    }
-
     // ********************内部类********************
 
-    @AllArgsConstructor
-    private static class InnerException extends Exception {
-        int code;
-        String msg;
+    private static class AuthenticationException extends Exception {
+    }
+
+    private static class AuthorizationException extends Exception {
     }
 
 }

@@ -20,6 +20,7 @@ class PermxImportSelectorImpl implements ImportSelector {
         }
         return new String[]{
                 ((Class<?>) map.get("sessionProcessor")).getName(),
+                ((Class<?>) map.get("authExceptionProcessor")).getName(),
                 ((Class<?>) map.get("permDefineProvider")).getName(),
                 ((Class<?>) map.get("sessionStorage")).getName(),
                 ((Class<?>) map.get("sessionIdProcessor")).getName(),
