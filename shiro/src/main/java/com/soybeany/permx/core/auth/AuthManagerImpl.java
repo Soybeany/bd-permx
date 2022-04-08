@@ -12,6 +12,7 @@ import com.soybeany.permx.exception.BdPermxNoSessionException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Soybeany
  * @date 2022/3/28
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+@Component
 public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
 
     @Autowired

@@ -16,7 +16,7 @@ import java.util.Collection;
  * @author Soybeany
  * @date 2022/4/7
  */
-@SuppressWarnings({"AlibabaServiceOrDaoClassShouldEndWithImpl", "SpringJavaInjectionPointsAutowiringInspection"})
+@SuppressWarnings("AlibabaServiceOrDaoClassShouldEndWithImpl")
 @Component
 public class SessionDaoAdapter<S> implements SessionDAO {
 

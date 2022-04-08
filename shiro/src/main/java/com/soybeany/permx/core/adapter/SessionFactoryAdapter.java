@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  * @author Soybeany
  * @date 2022/4/7
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 public class SessionFactoryAdapter<Input, S> implements SessionFactory, InputAccessor<Input> {
 

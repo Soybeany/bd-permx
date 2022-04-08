@@ -27,7 +27,6 @@ import java.util.Collection;
  * @author Soybeany
  * @date 2022/4/2
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 public class SessionManagerAdapter<Input, S> extends DefaultSessionManager implements ISessionManager<Input, S> {
 

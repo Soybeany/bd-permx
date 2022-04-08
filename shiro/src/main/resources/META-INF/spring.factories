@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.soybeany.permx.core.config.ShiroAutoConfiguration

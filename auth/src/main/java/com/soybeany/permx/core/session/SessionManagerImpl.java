@@ -9,6 +9,7 @@ import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
 import com.soybeany.permx.model.PermissionParts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import java.util.Collection;
  * @author Soybeany
  * @date 2022/3/29
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+@Component
 public class SessionManagerImpl<Input, Session> implements ISessionManager<Input, Session> {
 
     @Autowired
