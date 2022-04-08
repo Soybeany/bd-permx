@@ -23,6 +23,7 @@
         <module>shiro-demo</module>
         <module>shiro-anno</module>
         <module>auth-anno</module>
+        <module>shiro-test</module>
     </modules>
 
     <properties>
