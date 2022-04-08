@@ -1,6 +1,7 @@
 package com.soybeany.permx.core.adapter;
 
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapException;
+import com.soybeany.permx.core.exception.ShiroAuthenticationWrapRtException;
 import com.soybeany.permx.exception.BdPermxAuthException;
 import com.soybeany.util.file.BdFileUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -36,6 +37,8 @@ public class RealmAdapter<Input> implements Realm {
             tokenAdapter.getAuthVerifier().onVerify(tokenAdapter.getInput());
         } catch (BdPermxAuthException e) {
             throw new ShiroAuthenticationWrapException(e);
+        } catch (RuntimeException e) {
+            throw new ShiroAuthenticationWrapRtException(e);
         }
         return new SimpleAuthenticationInfo(new SimplePrincipalCollection(token.getPrincipal(), "main"), token.getCredentials());
     }

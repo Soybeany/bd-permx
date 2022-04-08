@@ -7,6 +7,7 @@ import com.soybeany.permx.api.ISessionManager;
 import com.soybeany.permx.core.adapter.AuthenticationTokenAdapter;
 import com.soybeany.permx.core.api.InputAccessor;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapException;
+import com.soybeany.permx.core.exception.ShiroAuthenticationWrapRtException;
 import com.soybeany.permx.exception.BdPermxAuthException;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import org.apache.shiro.SecurityUtils;
@@ -38,6 +39,8 @@ public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
             inputInputAccessor.setInput(input);
             SecurityUtils.getSubject().login(new AuthenticationTokenAdapter<>(input, authVerifier));
         } catch (ShiroAuthenticationWrapException e) {
+            throw e.getTarget();
+        } catch (ShiroAuthenticationWrapRtException e) {
             throw e.getTarget();
         } finally {
             inputInputAccessor.removeInput();
