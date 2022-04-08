@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
  * @date 2022/4/7
  */
 @Component
-public class SessionFactoryAdapter<Input, S> implements SessionFactory, InputAccessor<Input> {
-
-    private final ThreadLocal<Input> holder = new ThreadLocal<>();
+public class SessionFactoryAdapter<Input, S> implements SessionFactory {
 
     @Autowired
     private ISessionIdProcessor<Input> sessionIdProcessor;
@@ -25,6 +23,8 @@ public class SessionFactoryAdapter<Input, S> implements SessionFactory, InputAcc
     private ISessionProcessor<Input, S> sessionProcessor;
     @Autowired
     private ISessionStorage<S> sessionStorage;
+    @Autowired
+    private InputAccessor<Input> inputAccessor;
 
     public static <S> Session createShiroSession(String sessionId, S s, ISessionStorage<S> sessionStorage) {
         SessionAdapter<S> session = new SessionAdapter<>(s);
@@ -36,7 +36,7 @@ public class SessionFactoryAdapter<Input, S> implements SessionFactory, InputAcc
 
     @Override
     public Session createSession(SessionContext initData) {
-        Input input = getInput();
+        Input input = inputAccessor.getInput();
         String sessionId = sessionIdProcessor.getNewSessionId(input);
         // 创建自定义会话
         S s = sessionProcessor.toSession(sessionId, input);
@@ -44,18 +44,4 @@ public class SessionFactoryAdapter<Input, S> implements SessionFactory, InputAcc
         return createShiroSession(sessionId, s, sessionStorage);
     }
 
-    @Override
-    public void setInput(Input input) {
-        holder.set(input);
-    }
-
-    @Override
-    public Input getInput() {
-        return holder.get();
-    }
-
-    @Override
-    public void removeInput() {
-        holder.remove();
-    }
 }

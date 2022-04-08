@@ -4,7 +4,9 @@ import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.ICodePermHandler;
 import com.soybeany.permx.api.ISessionManager;
 import com.soybeany.permx.core.adapter.*;
+import com.soybeany.permx.core.api.InputAccessor;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
+import com.soybeany.permx.core.auth.InputAccessorImpl;
 import com.soybeany.permx.core.perm.ShiroAnnoPermHandler;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SubjectFactory;
@@ -68,6 +70,12 @@ public class ShiroAutoConfiguration {
     @Bean
     ISessionManager<?, ?> sessionManager() {
         return new SessionManagerAdapter<>();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    InputAccessor<?> inputAccessor() {
+        return new InputAccessorImpl<>();
     }
 
 }
