@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "AlibabaAbstractClassShouldStartWithAbstractNaming"})
 public abstract class CheckRuleStorage {
 
     private static final AntPathMatcher MATCHER = new AntPathMatcher();

@@ -21,6 +21,8 @@
         <module>shiro</module>
         <module>auth</module>
         <module>shiro-demo</module>
+        <module>shiro-anno</module>
+        <module>auth-anno</module>
     </modules>
 
     <properties>

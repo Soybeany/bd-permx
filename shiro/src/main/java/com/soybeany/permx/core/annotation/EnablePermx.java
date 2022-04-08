@@ -6,8 +6,8 @@ import com.soybeany.permx.core.auth.AuthInterceptor;
 import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
 import com.soybeany.permx.core.config.PermxConfig;
-import com.soybeany.permx.core.perm.CheckRuleHandler;
 import com.soybeany.permx.core.perm.PermDefineConsumerImpl;
+import com.soybeany.permx.core.perm.ShiroAnnoPermHandler;
 import com.soybeany.permx.impl.AuthListenerStdImpl;
 import com.soybeany.permx.impl.EmptyPermDefineProvider;
 import com.soybeany.permx.impl.HeaderSessionIdProcessorStdImpl;
@@ -25,7 +25,7 @@ import java.lang.annotation.*;
 @Documented
 @Import({
         PermxConfig.class,
-        CheckRuleHandler.class,
+        ShiroAnnoPermHandler.class,
         AuthInterceptor.class,
         AuthInterceptorConfigurer.class,
         PermDefineConsumerImpl.class,

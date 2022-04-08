@@ -35,7 +35,7 @@ public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
         // shiro登录
         try {
             inputInputAccessor.setInput(input);
-            SecurityUtils.getSubject().login(new AuthenticationTokenAdapter<>(input));
+            SecurityUtils.getSubject().login(new AuthenticationTokenAdapter<>(input, authVerifier));
         } catch (ShiroAuthenticationWrapException e) {
             throw e.getTarget();
         } finally {

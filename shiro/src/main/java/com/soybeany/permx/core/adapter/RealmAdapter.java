@@ -1,6 +1,5 @@
 package com.soybeany.permx.core.adapter;
 
-import com.soybeany.permx.api.IAuthVerifier;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapException;
 import com.soybeany.permx.exception.BdPermxAuthException;
 import com.soybeany.util.file.BdFileUtils;
@@ -10,19 +9,14 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Soybeany
  * @date 2022/4/2
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 public class RealmAdapter<Input> implements Realm {
-
-    @Autowired
-    private IAuthVerifier<Input> verifier;
 
     @Override
     public String getName() {
@@ -39,7 +33,7 @@ public class RealmAdapter<Input> implements Realm {
     public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         AuthenticationTokenAdapter<Input> tokenAdapter = (AuthenticationTokenAdapter<Input>) token;
         try {
-            verifier.onVerify(tokenAdapter.getInput());
+            tokenAdapter.getAuthVerifier().onVerify(tokenAdapter.getInput());
         } catch (BdPermxAuthException e) {
             throw new ShiroAuthenticationWrapException(e);
         }
