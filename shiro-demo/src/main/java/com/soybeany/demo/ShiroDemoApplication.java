@@ -3,7 +3,7 @@ package com.soybeany.demo;
 import com.soybeany.demo.impl.AuthListenerImpl;
 import com.soybeany.demo.impl.PermDefineProviderImpl;
 import com.soybeany.demo.impl.SessionProcessorImpl;
-import com.soybeany.permx.core.annotation.EnablePermx;
+import com.soybeany.permx.annotation.EnablePermx;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

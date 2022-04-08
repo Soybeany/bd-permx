@@ -1,4 +1,4 @@
-package com.soybeany.permx.core.annotation;
+package com.soybeany.permx.annotation;
 
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;

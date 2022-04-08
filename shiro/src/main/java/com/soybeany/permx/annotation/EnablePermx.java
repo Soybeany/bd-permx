@@ -1,4 +1,4 @@
-package com.soybeany.permx.core.annotation;
+package com.soybeany.permx.annotation;
 
 import com.soybeany.permx.api.*;
 import com.soybeany.permx.core.adapter.*;
