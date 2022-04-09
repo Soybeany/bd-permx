@@ -42,11 +42,11 @@ public class SessionDaoAdapter<S> implements SessionDAO {
     @SuppressWarnings("unchecked")
     @Override
     public void update(Session session) throws UnknownSessionException {
-        SessionAdapter<S> sessionAdapter = (SessionAdapter<S>) session;
-        String sessionId = (String) sessionAdapter.getId();
-        S s = sessionAdapter.getSession();
-        int ttl = (int) (session.getTimeout() / 1000);
-        sessionStorage.saveSession(sessionId, s, ttl);
+//        SessionAdapter<S> sessionAdapter = (SessionAdapter<S>) session;
+//        String sessionId = (String) sessionAdapter.getId();
+//        S s = sessionAdapter.getSession();
+//        int ttl = (int) (session.getTimeout() / 1000);
+//        sessionStorage.saveSession(sessionId, s, ttl);
     }
 
     @Override

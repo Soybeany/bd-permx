@@ -11,24 +11,25 @@ import com.soybeany.permx.model.CheckRuleStorage;
 import com.soybeany.permx.model.PermissionParts;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.session.UnknownSessionException;
-import org.apache.shiro.session.mgt.DefaultSessionKey;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.SessionContext;
 import org.apache.shiro.session.mgt.SessionKey;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author Soybeany
  * @date 2022/4/2
  */
 @Component
-public class SessionManagerAdapter<Input, S> extends DefaultSessionManager implements ISessionManager<Input, S> {
+public class SessionManagerAdapter<Input, S> extends DefaultWebSessionManager implements ISessionManager<Input, S> {
+
+    private static final String REAL_SESSION = "realSession";
 
     @Autowired
     private ISessionIdProcessor<Input> sessionIdProcessor;
@@ -36,6 +37,12 @@ public class SessionManagerAdapter<Input, S> extends DefaultSessionManager imple
     private ISessionProcessor<Input, S> sessionProcessor;
     @Autowired
     private ISessionStorage<S> sessionStorage;
+
+    @SuppressWarnings("unchecked")
+    public static <S> Optional<S> loadSession() {
+        return Optional.ofNullable(SecurityUtils.getSubject().getSession(false))
+                .map(session -> (S) session.getAttribute(REAL_SESSION));
+    }
 
     public SessionManagerAdapter() {
         setSessionValidationSchedulerEnabled(false);
@@ -51,38 +58,28 @@ public class SessionManagerAdapter<Input, S> extends DefaultSessionManager imple
         return session;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public S saveSession(HttpServletRequest request, HttpServletResponse response, Input input) {
         // 获取会话
-        SessionAdapter<S> sessionAdapter = (SessionAdapter<S>) SecurityUtils.getSubject().getSession(false);
-        // 将sessionId写入response
-        String sessionId = (String) sessionAdapter.getId();
-        int ttl = (int) (sessionAdapter.getTimeout() / 1000);
-        sessionIdProcessor.saveSessionId(sessionId, request, response, input, ttl);
-        return sessionAdapter.getSession();
+        Session session = SecurityUtils.getSubject().getSession(false);
+        // 将自定义session写入session
+        String sessionId = (String) session.getId();
+        S s = sessionProcessor.toSession(sessionId, input);
+        session.setAttribute(REAL_SESSION, s);
+        return s;
     }
 
     @Override
     public void removeSession(HttpServletRequest request, HttpServletResponse response) throws BdPermxNoSessionException {
         // 获取sessionId
         String sessionId = sessionIdProcessor.loadSessionId(request);
-        // 移除session实体
-        sessionStorage.removeSession(sessionId);
-        // 将移除sessionId的操作写入response
-        sessionIdProcessor.removeSessionId(sessionId, request, response);
+
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public S loadSession(HttpServletRequest request) throws BdPermxNoSessionException {
-        String sessionId = sessionIdProcessor.loadSessionId(request);
-        try {
-            SessionAdapter<S> sessionAdapter = (SessionAdapter<S>) SecurityUtils.getSecurityManager().getSession(new DefaultSessionKey(sessionId));
-            return sessionAdapter.getSession();
-        } catch (UnknownSessionException e) {
-            throw new BdPermxNoSessionException("没有找到会话");
-        }
+        return (S) loadSession().orElseThrow(() -> new BdPermxNoSessionException("没有找到会话"));
     }
 
     @Override

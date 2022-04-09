@@ -1,8 +1,6 @@
 package com.soybeany.permx.annotation;
 
 import com.soybeany.permx.api.*;
-import com.soybeany.permx.core.auth.AuthInterceptor;
-import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.core.perm.PermDefineConsumerImpl;
 import com.soybeany.permx.impl.*;
@@ -19,8 +17,6 @@ import java.lang.annotation.*;
 @Documented
 @Import({
         PermxConfig.class,
-        AuthInterceptor.class,
-        AuthInterceptorConfigurer.class,
         PermDefineConsumerImpl.class,
         PermxImportSelectorImpl.class,
 })

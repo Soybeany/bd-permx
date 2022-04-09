@@ -56,8 +56,6 @@ public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
         // shiro退出登录
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        // 移除session
-        sessionManager.removeSession(request, response);
     }
 
 }

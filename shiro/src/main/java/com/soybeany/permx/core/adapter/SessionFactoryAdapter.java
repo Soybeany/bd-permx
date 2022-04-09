@@ -27,11 +27,12 @@ public class SessionFactoryAdapter<Input, S> implements SessionFactory {
     private InputAccessor<Input> inputAccessor;
 
     public static <S> Session createShiroSession(String sessionId, S s, ISessionStorage<S> sessionStorage) {
-        SessionAdapter<S> session = new SessionAdapter<>(s);
-        // 配置shiro会话
-        session.setId(sessionId);
-        session.setTimeout(sessionStorage.getSessionTtl(sessionId, s) * 1000L);
-        return session;
+//        SessionAdapter<S> session = new SessionAdapter<>(s);
+//        // 配置shiro会话
+//        session.setId(sessionId);
+//        session.setTimeout(sessionStorage.getSessionTtl(sessionId, s) * 1000L);
+//        return session;
+        return null;
     }
 
     @Override

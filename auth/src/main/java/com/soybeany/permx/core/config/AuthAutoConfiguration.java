@@ -2,6 +2,8 @@ package com.soybeany.permx.core.config;
 
 import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.ISessionManager;
+import com.soybeany.permx.core.auth.AuthInterceptor;
+import com.soybeany.permx.core.auth.AuthInterceptorConfigurer;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
 import com.soybeany.permx.core.session.SessionManagerImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,6 +27,18 @@ class AuthAutoConfiguration {
     @Bean
     ISessionManager<?, ?> sessionManager() {
         return new SessionManagerImpl<>();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    AuthInterceptor<?, ?> authInterceptor() {
+        return new AuthInterceptor<>();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    AuthInterceptorConfigurer authInterceptorConfigurer() {
+        return new AuthInterceptorConfigurer();
     }
 
 }
