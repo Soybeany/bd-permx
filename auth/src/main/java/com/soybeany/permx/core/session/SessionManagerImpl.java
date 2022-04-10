@@ -1,9 +1,6 @@
 package com.soybeany.permx.core.session;
 
-import com.soybeany.permx.api.ISessionIdProcessor;
-import com.soybeany.permx.api.ISessionManager;
-import com.soybeany.permx.api.ISessionProcessor;
-import com.soybeany.permx.api.ISessionStorage;
+import com.soybeany.permx.api.*;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
@@ -20,7 +17,7 @@ import java.util.Collection;
  * @date 2022/3/29
  */
 @Component
-public class SessionManagerImpl<Input, Session> implements ISessionManager<Input, Session> {
+public class SessionManagerImpl<Input, Session extends ISession> implements ISessionManager<Input, Session> {
 
     @Autowired
     private ISessionIdProcessor<Input> sessionIdProcessor;

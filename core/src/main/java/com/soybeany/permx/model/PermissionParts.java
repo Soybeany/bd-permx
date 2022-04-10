@@ -8,11 +8,6 @@ public class PermissionParts {
     private final String module;
     private final String function;
 
-    public PermissionParts(String module, String function) {
-        this.module = module;
-        this.function = function;
-    }
-
     public static PermissionParts parse(String permission) {
         String[] parts = permission.split(SEPARATOR);
         String function = (parts.length > 1 ? parts[1] : WILDCARD);
@@ -30,6 +25,16 @@ public class PermissionParts {
             return false;
         }
         return true;
+    }
+
+    public PermissionParts(String module, String function) {
+        this.module = module;
+        this.function = function;
+    }
+
+    @Override
+    public String toString() {
+        return toPermissionString();
     }
 
     public String getModule() {

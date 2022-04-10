@@ -1,20 +1,20 @@
 package com.soybeany.permx.core.adapter;
 
 import com.soybeany.exception.BdRtException;
-import com.soybeany.permx.api.ISessionIdProcessor;
-import com.soybeany.permx.api.ISessionProcessor;
-import com.soybeany.permx.api.ISessionStorage;
-import com.soybeany.permx.api.InputAccessor;
+import com.soybeany.permx.api.*;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
-import org.apache.shiro.SecurityUtils;
+import com.soybeany.util.HexUtils;
+import com.soybeany.util.SerializeUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Optional;
@@ -25,10 +25,12 @@ import java.util.Optional;
  */
 @SuppressWarnings("AlibabaServiceOrDaoClassShouldEndWithImpl")
 @Component
-public class SessionDaoAdapter<Input, S> implements SessionDAO, DisposableBean {
+public class SessionDaoAdapter<Input, S extends ISession> implements SessionDAO, ServletRequestListener {
 
-    private static final String REAL_SESSION = "realSession";
-    private static final ThreadLocal<Session> STORAGE = new ThreadLocal<>();
+    private static final String REAL_SESSION = "ShiroSession";
+    private static final ThreadLocal<Object> STORAGE = new ThreadLocal<>();
+    private static final ThreadLocal<Session> SHIRO_STORAGE = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> NEED_PERSIST = new ThreadLocal<>();
 
     @Autowired
     private ISessionStorage<S> sessionStorage;
@@ -41,8 +43,7 @@ public class SessionDaoAdapter<Input, S> implements SessionDAO, DisposableBean {
 
     @SuppressWarnings("unchecked")
     public static <S> Optional<S> loadSessionOptional() {
-        return Optional.ofNullable(SecurityUtils.getSubject().getSession(false))
-                .map(session -> (S) session.getAttribute(REAL_SESSION));
+        return Optional.ofNullable((S) STORAGE.get());
     }
 
     @SuppressWarnings("unchecked")
@@ -53,51 +54,61 @@ public class SessionDaoAdapter<Input, S> implements SessionDAO, DisposableBean {
     @Override
     public Serializable create(Session session) {
         Input input = inputAccessor.getInput();
-        String sessionId = sessionIdProcessor.getNewSessionId(input);
+        String id = sessionIdProcessor.getNewSessionId(input);
         // 生成自定义session
-        S s = sessionProcessor.toSession(sessionId, input);
-        session.setAttribute(REAL_SESSION, s);
+        S s = sessionProcessor.toSession(id, input);
+        // 初始化shiro session
+        int ttl = sessionStorage.getSessionTtl(id, s);
+        ((SimpleSession) session).setId(id);
+        session.setTimeout(ttl * 1000L);
         // 持久化
-        int ttl = sessionStorage.getSessionTtl(sessionId, s);
-        sessionStorage.saveSession(sessionId, session, ttl);
-        // 初始化
-        initSession(session, sessionId, ttl);
-        return sessionId;
+        updateSessionStorage(s, session);
+        return id;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Session readSession(Serializable sessionId) throws UnknownSessionException {
+        String id = (String) sessionId;
+        //保障自定义session
+        S s = (S) STORAGE.get();
+        if (null == s) {
+            try {
+                s = sessionStorage.loadSession(id);
+                STORAGE.set(s);
+            } catch (BdPermxNoSessionException e) {
+                throw new UnknownSessionException("没有找到指定的会话");
+            }
+        }
         // 若线程缓存中有，则直接使用
-        Session session = STORAGE.get();
+        Session session = SHIRO_STORAGE.get();
         if (null != session) {
             return session;
         }
-        // 读取SimpleSession以及其中的自定义session，并保存到线程缓存
+        // 读取自定义session中的Session，并保存到线程缓存
         try {
-            String id = (String) sessionId;
-            session = sessionStorage.loadSession(id);
-            int ttl = sessionStorage.getSessionTtl(id, (S) session.getAttribute(REAL_SESSION));
-            // 初始化
-            initSession(session, id, ttl);
-        } catch (BdPermxNoSessionException e) {
-            throw new UnknownSessionException("没有找到指定的会话");
+            session = SerializeUtils.deserialize(HexUtils.hexToByteArray(s.getAttribute(REAL_SESSION)));
+            SHIRO_STORAGE.set(session);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new BdRtException("无法反序列化session:" + e.getMessage());
         }
         return session;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void update(Session session) throws UnknownSessionException {
-        STORAGE.set(session);
+        S s = (S) loadSessionOptional().orElseThrow(() -> new UnknownSessionException("没有找到会话"));
+        updateSessionStorage(s, session);
     }
 
     @Override
     public void delete(Session session) {
         try {
+            NEED_PERSIST.set(false);
             sessionStorage.removeSession((String) session.getId());
         } catch (BdPermxNoSessionException ignore) {
         }
-        STORAGE.remove();
     }
 
     @Override
@@ -105,17 +116,34 @@ public class SessionDaoAdapter<Input, S> implements SessionDAO, DisposableBean {
         throw new BdRtException("不支持获取全部session的操作");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void destroy() {
+    public void requestDestroyed(ServletRequestEvent sre) {
+        // 真正持久化
+        Boolean needPersist = NEED_PERSIST.get();
+        if (null != needPersist && needPersist) {
+            Session session = SHIRO_STORAGE.get();
+            S s = (S) STORAGE.get();
+            sessionStorage.saveSession((String) session.getId(), s, (int) (session.getTimeout() / 1000));
+        }
         STORAGE.remove();
+        SHIRO_STORAGE.remove();
+        NEED_PERSIST.remove();
     }
 
     // ***********************内部方法****************************
 
-    private void initSession(Session session, String sessionId, int ttl) {
-        ((SimpleSession) session).setId(sessionId);
-        session.setTimeout(ttl * 1000L);
-        STORAGE.set(session);
+    private void updateSessionStorage(S s, Session session) {
+        String sessionString;
+        try {
+            sessionString = HexUtils.bytesToHex(SerializeUtils.serialize(session));
+        } catch (IOException e) {
+            throw new BdRtException("无法序列化session:" + e.getMessage());
+        }
+        s.setAttribute(REAL_SESSION, sessionString);
+        STORAGE.set(s);
+        SHIRO_STORAGE.set(session);
+        NEED_PERSIST.set(true);
     }
 
 }

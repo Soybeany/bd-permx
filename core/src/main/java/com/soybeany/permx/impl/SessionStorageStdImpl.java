@@ -1,5 +1,6 @@
 package com.soybeany.permx.impl;
 
+import com.soybeany.permx.api.ISession;
 import com.soybeany.permx.api.ISessionStorage;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.util.cache.IDataHolder;
@@ -11,9 +12,9 @@ import java.util.Optional;
  * @author Soybeany
  * @date 2022/3/29
  */
-public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> {
+public class SessionStorageStdImpl<Session extends ISession> implements ISessionStorage<Session> {
 
-    private final IDataHolder<Object> sessionHolder = onSetupSessionHolder();
+    private final IDataHolder<Session> sessionHolder = onSetupSessionHolder();
 
     @Override
     public int getSessionTtl(String sessionId, Session session) {
@@ -21,7 +22,7 @@ public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> 
     }
 
     @Override
-    public void saveSession(String sessionId, Object session, int ttl) {
+    public void saveSession(String sessionId, Session session, int ttl) {
         sessionHolder.put(sessionId, session, ttl);
     }
 
@@ -31,14 +32,13 @@ public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> 
                 .orElseThrow(() -> new BdPermxNoSessionException("session不存在"));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <S> S loadSession(String sessionId) throws BdPermxNoSessionException {
-        return Optional.ofNullable((S) sessionHolder.get(sessionId))
+    public Session loadSession(String sessionId) throws BdPermxNoSessionException {
+        return Optional.ofNullable(sessionHolder.get(sessionId))
                 .orElseThrow(() -> new BdPermxNoSessionException("session不存在"));
     }
 
-    protected IDataHolder<Object> onSetupSessionHolder() {
+    protected IDataHolder<Session> onSetupSessionHolder() {
         return new StdMemDataHolder<>(onSetupMaxSessionCount());
     }
 
