@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "permx-shiro.enableUpdateSession",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "是否允许自动更新会话(若使用内存方式存储建议开启，否则建议关闭并自行更新)."
+    }
+  ]
+}

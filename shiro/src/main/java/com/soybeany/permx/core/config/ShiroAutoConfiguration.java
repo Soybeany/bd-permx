@@ -66,6 +66,11 @@ public class ShiroAutoConfiguration implements BeanPostProcessor {
         return new CookieAdapter<>();
     }
 
+    @Bean
+    PermxShiroConfig permxShiroConfig() {
+        return new PermxShiroConfig();
+    }
+
     @ConditionalOnMissingBean
     @Bean
     ICodePermHandler codePermHandler() {

@@ -2,6 +2,7 @@ package com.soybeany.permx.core.adapter;
 
 import com.soybeany.exception.BdRtException;
 import com.soybeany.permx.api.*;
+import com.soybeany.permx.core.config.PermxShiroConfig;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.util.HexUtils;
 import com.soybeany.util.SerializeUtils;
@@ -51,6 +52,9 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     @Lazy
     @Autowired
     private InputAccessor<Input> inputAccessor;
+    @Lazy
+    @Autowired
+    private PermxShiroConfig permxShiroConfig;
 
     @SuppressWarnings("unchecked")
     public static <S> Optional<S> loadSessionOptional() {
@@ -113,6 +117,9 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     @SuppressWarnings("unchecked")
     @Override
     public void update(Session session) throws UnknownSessionException {
+        if (!permxShiroConfig.getEnableUpdateSession() && !Boolean.TRUE.equals(CAN_CREATE_SESSION.get())) {
+            return;
+        }
         S s = (S) loadSessionOptional().orElseThrow(() -> new UnknownSessionException("没有找到会话"));
         updateSessionStorage(s, session, false);
     }

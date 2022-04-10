@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * 需使用ServletContextListener，不能使用InitializingBean，否则应用接口获取不全
+ *
  * @author Soybeany
  * @date 2022/4/8
  */
