@@ -1,6 +1,5 @@
 package com.soybeany.permx.core.auth;
 
-import com.soybeany.exception.BdRtException;
 import com.soybeany.permx.api.IAuthListener;
 import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.IAuthVerifier;
@@ -10,7 +9,6 @@ import com.soybeany.permx.core.adapter.SessionDaoAdapter;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapException;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapRtException;
 import com.soybeany.permx.exception.BdPermxAuthException;
-import com.soybeany.permx.exception.BdPermxNoSessionException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +43,8 @@ public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
             inputInputAccessor.removeInput();
         }
         // 调用回调
-        try {
-            Session session = SessionDaoAdapter.loadSession();
-            listener.onFoundSession(session);
-        } catch (BdPermxNoSessionException e) {
-            throw new BdRtException(e.getMessage());
-        }
+        Session session = SessionDaoAdapter.loadSession();
+        listener.onFoundSession(session);
     }
 
     @Override

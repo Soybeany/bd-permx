@@ -53,8 +53,12 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     }
 
     @SuppressWarnings("unchecked")
-    public static <S> S loadSession() throws BdPermxNoSessionException {
-        return (S) loadSessionOptional().orElseThrow(() -> new BdPermxNoSessionException("没有找到会话"));
+    public static <S> S loadSession() {
+        return (S) loadSessionOptional().orElseThrow(() -> new BdRtException("没有找到会话"));
+    }
+
+    public static String getSessionId() {
+        return (String) SHIRO_STORAGE.get().getId();
     }
 
     @Override

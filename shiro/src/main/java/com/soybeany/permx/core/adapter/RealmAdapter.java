@@ -1,11 +1,9 @@
 package com.soybeany.permx.core.adapter;
 
-import com.soybeany.exception.BdRtException;
 import com.soybeany.permx.api.ISessionProcessor;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapException;
 import com.soybeany.permx.core.exception.ShiroAuthenticationWrapRtException;
 import com.soybeany.permx.exception.BdPermxAuthException;
-import com.soybeany.permx.exception.BdPermxNoSessionException;
 import com.soybeany.permx.model.PermissionParts;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -53,12 +51,7 @@ public class RealmAdapter<Input, S> extends AuthorizingRealm implements BeanPost
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        S session;
-        try {
-            session = SessionDaoAdapter.loadSession();
-        } catch (BdPermxNoSessionException e) {
-            throw new BdRtException("无法从shiro会话中获取自定义会话");
-        }
+        S session = SessionDaoAdapter.loadSession();
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         for (PermissionParts parts : sessionProcessor.getPermissionsFromSession(session)) {
             info.addStringPermission(parts.toPermissionString());

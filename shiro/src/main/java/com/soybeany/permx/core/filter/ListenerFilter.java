@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Lazy;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -23,9 +24,15 @@ public class ListenerFilter<S> implements BeanPostProcessor, Filter {
     @SuppressWarnings("unchecked")
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("开始");
-        SessionDaoAdapter.loadSessionOptional().ifPresent(session -> listener.onFoundSession((S) session));
-        chain.doFilter(request, response);
-        System.out.println("结束");
+        try {
+            listener.onStartRequest((HttpServletRequest) request);
+        } catch (Exception ignore) {
+        }
+        try {
+            SessionDaoAdapter.loadSessionOptional().ifPresent(session -> listener.onFoundSession((S) session));
+            chain.doFilter(request, response);
+        } finally {
+            listener.onFinishRequest((HttpServletRequest) request);
+        }
     }
 }
