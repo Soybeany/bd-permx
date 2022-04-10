@@ -1,5 +1,6 @@
 package com.soybeany.permx.core.perm;
 
+import com.soybeany.permx.api.FilterChainBuilder;
 import com.soybeany.permx.api.ICodePermHandler;
 import com.soybeany.permx.exception.BdPermxRtException;
 import com.soybeany.permx.model.CheckRule;
@@ -25,6 +26,8 @@ public class ShiroAnnoPermHandler implements ICodePermHandler {
 
     @Autowired
     private RequestMappingHandlerMapping mapping;
+    @Autowired
+    private FilterChainBuilder filterChainBuilder;
 
     private static final Map<Class<?>, CheckRuleProvider> RESTRICT_PROVIDER_MAPPING = new HashMap<Class<?>, CheckRuleProvider>() {{
         put(RequiresGuest.class, (url, annotation, permDefines) -> {
@@ -55,6 +58,11 @@ public class ShiroAnnoPermHandler implements ICodePermHandler {
     @Override
     public void onHandleCodePerms(Set<String> permDefines) {
         mapping.getHandlerMethods().forEach((info, method) -> onHandleMethod(info, method, permDefines));
+    }
+
+    @Override
+    public void onInitialized() {
+        filterChainBuilder.buildFilterChain();
     }
 
     // ********************内部方法********************

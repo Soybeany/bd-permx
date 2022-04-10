@@ -10,4 +10,7 @@ public interface ICodePermHandler {
 
     void onHandleCodePerms(Set<String> permDefines);
 
+    default void onInitialized() {
+    }
+
 }

@@ -5,10 +5,9 @@ import com.soybeany.permx.api.PermDefineConsumer;
 import com.soybeany.permx.core.config.PermxConfig;
 import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ import java.util.Set;
  * @author Soybeany
  * @date 2022/4/8
  */
-public class PermHandler implements ServletContextListener {
+public class PermHandler implements InitializingBean {
 
     @Autowired
     private PermxConfig permxConfig;
@@ -26,7 +25,7 @@ public class PermHandler implements ServletContextListener {
     private ICodePermHandler codePermHandler;
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void afterPropertiesSet() {
         Set<String> permDefines = permDefineConsumer.getPermValueSet();
         // 先添加代码中指定的配置
         if (null != codePermHandler) {
@@ -39,6 +38,9 @@ public class PermHandler implements ServletContextListener {
                 .ifPresent(anon -> CheckRuleStorage.addRules(CheckRule.WithAnonymity.fromPatternList(anon)));
         // 更新全局配置
         CheckRuleStorage.updateAllRules();
+        // 执行回调
+        if (null != codePermHandler) {
+            codePermHandler.onInitialized();
+        }
     }
-
 }

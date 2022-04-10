@@ -1,13 +1,14 @@
 package com.soybeany.permx.core.filter;
 
+import com.soybeany.permx.api.FilterChainBuilder;
 import com.soybeany.permx.api.IAuthExceptionProcessor;
 import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -18,8 +19,8 @@ import java.util.Set;
  * @author Soybeany
  * @date 2022/4/9
  */
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-public class ShiroFilterManager implements InitializingBean {
+@Component
+public class ShiroFilterManager implements FilterChainBuilder {
 
     @Autowired
     private ShiroFilterFactoryBeanImpl shiroFilterFactoryBean;
@@ -29,7 +30,7 @@ public class ShiroFilterManager implements InitializingBean {
     private AbstractShiroFilter shiroFilter;
 
     @Override
-    public void afterPropertiesSet() {
+    public void buildFilterChain() {
         // 定义拦截规则
         shiroFilterFactoryBean.setFilterChainDefinitionMap(getFilterChainDefinitionMap());
         // 定义拦截器

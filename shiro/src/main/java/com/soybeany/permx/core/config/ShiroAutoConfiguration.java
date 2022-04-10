@@ -1,5 +1,6 @@
 package com.soybeany.permx.core.config;
 
+import com.soybeany.permx.api.FilterChainBuilder;
 import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.ICodePermHandler;
 import com.soybeany.permx.api.InputAccessor;
@@ -103,11 +104,11 @@ public class ShiroAutoConfiguration implements BeanPostProcessor {
     }
 
     /**
-     * 自定义ShiroFilter
+     * 自定义filterChainBuilder
      */
     @ConditionalOnMissingBean
     @Bean
-    ShiroFilterManager shiroFilterManager() {
+    FilterChainBuilder filterChainBuilder() {
         return new ShiroFilterManager();
     }
 
