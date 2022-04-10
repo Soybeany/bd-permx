@@ -19,6 +19,7 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.security.interceptor.AopAllianceAnnotationsAuthorizingMethodInterceptor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.web.servlet.Cookie;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,7 @@ import java.util.Collections;
  * @date 2022/4/8
  */
 @Configuration
-public class ShiroAutoConfiguration {
+public class ShiroAutoConfiguration implements BeanPostProcessor {
 
     @ConditionalOnMissingBean
     @Bean
@@ -77,7 +78,7 @@ public class ShiroAutoConfiguration {
     }
 
     @Bean
-    ListenerFilter<?> listenerInterceptor() {
+    ListenerFilter<?> listenerFilter() {
         return new ListenerFilter<>();
     }
 

@@ -10,6 +10,8 @@ import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequestEvent;
@@ -25,19 +27,23 @@ import java.util.Optional;
  */
 @SuppressWarnings("AlibabaServiceOrDaoClassShouldEndWithImpl")
 @Component
-public class SessionDaoAdapter<Input, S extends ISession> implements SessionDAO, ServletRequestListener {
+public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostProcessor, SessionDAO, ServletRequestListener {
 
     private static final String REAL_SESSION = "ShiroSession";
     private static final ThreadLocal<Object> STORAGE = new ThreadLocal<>();
     private static final ThreadLocal<Session> SHIRO_STORAGE = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> NEED_PERSIST = new ThreadLocal<>();
 
+    @Lazy
     @Autowired
     private ISessionStorage<S> sessionStorage;
+    @Lazy
     @Autowired
     private ISessionIdProcessor<Input> sessionIdProcessor;
+    @Lazy
     @Autowired
     private ISessionProcessor<Input, S> sessionProcessor;
+    @Lazy
     @Autowired
     private InputAccessor<Input> inputAccessor;
 

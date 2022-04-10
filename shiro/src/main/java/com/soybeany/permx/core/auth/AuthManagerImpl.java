@@ -45,17 +45,16 @@ public class AuthManagerImpl<Input, Session> implements IAuthManager<Input> {
             inputInputAccessor.removeInput();
         }
         // 调用回调
-        Session session;
         try {
-            session = SessionDaoAdapter.loadSession();
+            Session session = SessionDaoAdapter.loadSession();
+            listener.onFoundSession(session);
         } catch (BdPermxNoSessionException e) {
             throw new BdRtException(e.getMessage());
         }
-        listener.onFoundSession(session);
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) throws BdPermxNoSessionException {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         // shiro退出登录
         Subject subject = SecurityUtils.getSubject();
         subject.logout();

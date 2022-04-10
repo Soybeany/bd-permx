@@ -17,6 +17,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  * @date 2022/4/2
  */
 @Component
-public class RealmAdapter<Input, S> extends AuthorizingRealm {
+public class RealmAdapter<Input, S> extends AuthorizingRealm implements BeanPostProcessor {
 
     @Lazy
     @Autowired
