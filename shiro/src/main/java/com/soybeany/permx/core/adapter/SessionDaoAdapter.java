@@ -19,7 +19,11 @@ import javax.servlet.ServletRequestListener;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Soybeany
@@ -32,7 +36,8 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     private static final String REAL_SESSION = "ShiroSession";
     private static final ThreadLocal<Object> STORAGE = new ThreadLocal<>();
     private static final ThreadLocal<Session> SHIRO_STORAGE = new ThreadLocal<>();
-    private static final ThreadLocal<Boolean> NEED_PERSIST = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> CAN_CREATE_SESSION = new ThreadLocal<>();
+    private static final Map<Serializable, Lock> LOCK_MAP = new ConcurrentHashMap<>();
 
     @Lazy
     @Autowired
@@ -72,7 +77,7 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
         ((SimpleSession) session).setId(id);
         session.setTimeout(ttl * 1000L);
         // 持久化
-        updateSessionStorage(s, session);
+        updateSessionStorage(s, session, true);
         return id;
     }
 
@@ -109,16 +114,19 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     @Override
     public void update(Session session) throws UnknownSessionException {
         S s = (S) loadSessionOptional().orElseThrow(() -> new UnknownSessionException("没有找到会话"));
-        updateSessionStorage(s, session);
+        updateSessionStorage(s, session, false);
     }
 
     @Override
     public void delete(Session session) {
-        try {
-            NEED_PERSIST.set(false);
-            sessionStorage.removeSession((String) session.getId());
-        } catch (BdPermxNoSessionException ignore) {
-        }
+        CAN_CREATE_SESSION.set(null);
+        Serializable sessionId = session.getId();
+        runWithLock(sessionId, false, () -> {
+            try {
+                sessionStorage.removeSession((String) sessionId);
+            } catch (BdPermxNoSessionException ignore) {
+            }
+        });
     }
 
     @Override
@@ -130,20 +138,42 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
     @Override
     public void requestDestroyed(ServletRequestEvent sre) {
         // 真正持久化
-        Boolean needPersist = NEED_PERSIST.get();
-        if (null != needPersist && needPersist) {
+        Boolean canCreate = CAN_CREATE_SESSION.get();
+        if (null != canCreate) {
             Session session = SHIRO_STORAGE.get();
-            S s = (S) STORAGE.get();
-            sessionStorage.saveSession((String) session.getId(), s, (int) (session.getTimeout() / 1000));
+            runWithLock(session.getId(), true, () -> {
+                S s = (S) STORAGE.get();
+                sessionStorage.saveSession((String) session.getId(), s, (int) (session.getTimeout() / 1000), canCreate);
+            });
         }
         STORAGE.remove();
         SHIRO_STORAGE.remove();
-        NEED_PERSIST.remove();
+        CAN_CREATE_SESSION.remove();
     }
 
     // ***********************内部方法****************************
 
-    private void updateSessionStorage(S s, Session session) {
+    @SuppressWarnings("AlibabaLockShouldWithTryFinally")
+    private void runWithLock(Serializable sessionId, boolean useTry, Runnable runnable) {
+        Lock lock;
+        synchronized (LOCK_MAP) {
+            lock = LOCK_MAP.computeIfAbsent(sessionId, id -> new ReentrantLock());
+        }
+        if (useTry) {
+            if (!lock.tryLock()) {
+                return;
+            }
+        } else {
+            lock.lock();
+        }
+        try {
+            runnable.run();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void updateSessionStorage(S s, Session session, boolean canCreateSession) {
         String sessionString;
         try {
             sessionString = HexUtils.bytesToHex(SerializeUtils.serialize(session));
@@ -153,7 +183,9 @@ public class SessionDaoAdapter<Input, S extends ISession> implements BeanPostPro
         s.setAttribute(REAL_SESSION, sessionString);
         STORAGE.set(s);
         SHIRO_STORAGE.set(session);
-        NEED_PERSIST.set(true);
+        if (null == CAN_CREATE_SESSION.get() || canCreateSession) {
+            CAN_CREATE_SESSION.set(canCreateSession);
+        }
     }
 
 }

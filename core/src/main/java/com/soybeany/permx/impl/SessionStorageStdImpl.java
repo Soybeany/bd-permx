@@ -1,5 +1,6 @@
 package com.soybeany.permx.impl;
 
+import com.soybeany.exception.BdRtException;
 import com.soybeany.permx.api.ISession;
 import com.soybeany.permx.api.ISessionStorage;
 import com.soybeany.permx.exception.BdPermxNoSessionException;
@@ -22,7 +23,10 @@ public class SessionStorageStdImpl<Session extends ISession> implements ISession
     }
 
     @Override
-    public void saveSession(String sessionId, Session session, int ttl) {
+    public void saveSession(String sessionId, Session session, int ttl, boolean canCreate) {
+        if (!canCreate && null == sessionHolder.get(sessionId)) {
+            throw new BdRtException("不允许保存不存在的会话");
+        }
         sessionHolder.put(sessionId, session, ttl);
     }
 

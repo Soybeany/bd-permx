@@ -34,7 +34,7 @@ public class SessionManagerImpl<Input, Session extends ISession> implements ISes
         Session session = sessionProcessor.toSession(sessionId, input);
         // 保存session实体
         int ttl = sessionStorage.getSessionTtl(sessionId, session);
-        sessionStorage.saveSession(sessionId, session, ttl);
+        sessionStorage.saveSession(sessionId, session, ttl, true);
         // 将sessionId写入response
         sessionIdProcessor.saveSessionId(sessionId, request, response, input, ttl);
         // 返回sessionId
