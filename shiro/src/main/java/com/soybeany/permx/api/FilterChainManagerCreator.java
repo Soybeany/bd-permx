@@ -1,4 +1,4 @@
-package com.soybeany.permx.core.api;
+package com.soybeany.permx.api;
 
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 

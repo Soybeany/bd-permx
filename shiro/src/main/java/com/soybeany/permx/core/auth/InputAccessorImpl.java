@@ -1,6 +1,6 @@
 package com.soybeany.permx.core.auth;
 
-import com.soybeany.permx.core.api.InputAccessor;
+import com.soybeany.permx.api.InputAccessor;
 import org.springframework.stereotype.Component;
 
 /**

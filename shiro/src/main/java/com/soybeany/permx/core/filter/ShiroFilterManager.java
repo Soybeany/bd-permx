@@ -5,7 +5,6 @@ import com.soybeany.permx.model.CheckRule;
 import com.soybeany.permx.model.CheckRuleStorage;
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ import java.util.Set;
 public class ShiroFilterManager implements InitializingBean {
 
     @Autowired
-    private DefaultWebSecurityManager securityManager;
-    @Autowired
     private ShiroFilterFactoryBeanImpl shiroFilterFactoryBean;
     @Autowired
     private IAuthExceptionProcessor authExceptionProcessor;
@@ -33,8 +30,6 @@ public class ShiroFilterManager implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        // 切换session模式
-        securityManager.setSessionMode(DefaultWebSecurityManager.NATIVE_SESSION_MODE);
         // 定义拦截规则
         shiroFilterFactoryBean.setFilterChainDefinitionMap(getFilterChainDefinitionMap());
         // 定义拦截器

@@ -2,9 +2,11 @@ package com.soybeany.permx.core.config;
 
 import com.soybeany.permx.api.IAuthManager;
 import com.soybeany.permx.api.ICodePermHandler;
+import com.soybeany.permx.api.InputAccessor;
+import com.soybeany.permx.core.adapter.CookieAdapter;
 import com.soybeany.permx.core.adapter.RealmAdapter;
+import com.soybeany.permx.core.adapter.SessionDaoAdapter;
 import com.soybeany.permx.core.adapter.SessionManagerAdapter;
-import com.soybeany.permx.core.api.InputAccessor;
 import com.soybeany.permx.core.auth.AuthManagerImpl;
 import com.soybeany.permx.core.auth.InputAccessorImpl;
 import com.soybeany.permx.core.filter.ListenerFilter;
@@ -13,8 +15,10 @@ import com.soybeany.permx.core.perm.ShiroAnnoPermHandler;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.security.interceptor.AopAllianceAnnotationsAuthorizingMethodInterceptor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.web.servlet.Cookie;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,22 +52,22 @@ public class ShiroAutoConfiguration {
         return new RealmAdapter<>();
     }
 
-//    @ConditionalOnMissingBean
-//    @Bean
-//    SessionFactory sessionFactory() {
-//        return new SessionFactoryAdapter<>();
-//    }
-
-//    @ConditionalOnMissingBean
-//    @Bean
-//    SessionDAO sessionDAO() {
-//        return new SessionDaoAdapter<>();
-//    }
+    @ConditionalOnMissingBean
+    @Bean
+    SessionDAO sessionDAO() {
+        return new SessionDaoAdapter<>();
+    }
 
     @ConditionalOnMissingBean
     @Bean
-    SessionManager sessionManager() {
-        return new SessionManagerAdapter<>();
+    SessionManager sessionManager(SessionDAO sessionDAO) {
+        return new SessionManagerAdapter(sessionDAO);
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    Cookie sessionCookieTemplate() {
+        return new CookieAdapter();
     }
 
     @ConditionalOnMissingBean

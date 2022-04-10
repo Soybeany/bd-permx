@@ -1,7 +1,7 @@
 package com.soybeany.permx.core.filter;
 
 import com.soybeany.permx.api.IAuthListener;
-import com.soybeany.permx.core.adapter.SessionManagerAdapter;
+import com.soybeany.permx.core.adapter.SessionDaoAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
@@ -20,7 +20,7 @@ public class ListenerFilter<S> implements Filter {
     @SuppressWarnings("unchecked")
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        SessionManagerAdapter.loadSession().ifPresent(session -> listener.onFoundSession((S) session));
+        SessionDaoAdapter.loadSessionOptional().ifPresent(session -> listener.onFoundSession((S) session));
         chain.doFilter(request, response);
     }
 }

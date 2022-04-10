@@ -1,6 +1,6 @@
 package com.soybeany.permx.core.filter;
 
-import com.soybeany.permx.core.api.FilterChainManagerCreator;
+import com.soybeany.permx.api.FilterChainManagerCreator;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 

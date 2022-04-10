@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> {
 
-    private final IDataHolder<Session> sessionHolder = onSetupSessionHolder();
+    private final IDataHolder<Object> sessionHolder = onSetupSessionHolder();
 
     @Override
     public int getSessionTtl(String sessionId, Session session) {
@@ -21,7 +21,7 @@ public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> 
     }
 
     @Override
-    public void saveSession(String sessionId, Session session, int ttl) {
+    public void saveSession(String sessionId, Object session, int ttl) {
         sessionHolder.put(sessionId, session, ttl);
     }
 
@@ -31,13 +31,14 @@ public class SessionStorageStdImpl<Session> implements ISessionStorage<Session> 
                 .orElseThrow(() -> new BdPermxNoSessionException("session不存在"));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Session loadSession(String sessionId) throws BdPermxNoSessionException {
-        return Optional.ofNullable(sessionHolder.get(sessionId))
+    public <S> S loadSession(String sessionId) throws BdPermxNoSessionException {
+        return Optional.ofNullable((S) sessionHolder.get(sessionId))
                 .orElseThrow(() -> new BdPermxNoSessionException("session不存在"));
     }
 
-    protected IDataHolder<Session> onSetupSessionHolder() {
+    protected IDataHolder<Object> onSetupSessionHolder() {
         return new StdMemDataHolder<>(onSetupMaxSessionCount());
     }
 

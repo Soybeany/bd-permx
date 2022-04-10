@@ -10,10 +10,10 @@ public interface ISessionStorage<Session> {
 
     int getSessionTtl(String sessionId, Session session);
 
-    void saveSession(String sessionId, Session session, int ttl);
+    void saveSession(String sessionId, Object session, int ttl);
 
     void removeSession(String sessionId) throws BdPermxNoSessionException;
 
-    Session loadSession(String sessionId) throws BdPermxNoSessionException;
+    <S> S loadSession(String sessionId) throws BdPermxNoSessionException;
 
 }

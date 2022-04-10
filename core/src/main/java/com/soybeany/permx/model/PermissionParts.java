@@ -50,6 +50,10 @@ public class PermissionParts {
         return isPartMatch(function, another.function);
     }
 
+    public String toPermissionString() {
+        return module + SEPARATOR + function;
+    }
+
     // ****************************************
 
     private boolean isPartMatch(String ref, String target) {
